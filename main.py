@@ -25,17 +25,23 @@ from openai import OpenAI
 client = OpenAI()
 
 ANALYSIS_PROMPT = """
-Toimi SEO- ja tekoälyasiantuntijana ja tee analyysi crawlauksen antaman datan pohjalta. Arvioi verkkosivustoa kokonaisuutena seuraavista näkökulmista. Tavoitteena on auttaa sivustoa menestymään hakumaailmassa, jossa tekoäly on integroitu hakukoneisiin ja käyttäjät etsivät edelleen tietoa, tuotteita ja palveluita ostopäätösten tueksi.
-Tarkastele jokaista seuraavaa osa-aluetta, ja tee arvio koko sivuston tasolla. Mikäli mahdollista, anna yksi esimerkki hyvästä toteutuksesta ja yksi esimerkki heikosta tai puutteellisesta toteutuksesta kustakin osa-alueesta.
+Toimi SEO- ja tekoälyasiantuntijana ja tee analyysi crawlauksen antaman datan pohjalta. Arvioi jokaisen crawlatun sivun elementit sivukohtaisesti seuraavasti: Tekninen toteutus perus seo:n näkökulmasta, jos kaikki on hyvin, niin mainitse vain hyvä, jos huomautettavaa tai huonosti toteutettu, niin kerro ne, mutta älä anna suosituksia. Arvioi myös, että tukevatko elementit kokonaisuutena sivua ja sen sisältöä seo:n näkökulmasta. Jos hyvin, niin mainitse vain hyvä, mutta jos huomautettavaa, ristiriitaisuuksia tai virheitä, niin listaa ne, mutta älä annan suosituksia. Toteuta vastaus niin, että ensimmäisenä on sivun nimi, sen alla elementin otsikko (esim metaotsikot ja kuvaukset) ja sen alla kommentti/arvio.
+
+Arvioi myös verkkosivustoa kokonaisuutena. Ota huomioon, että onko kysessä paikallinen yritys, palvelualue yritys, verkkokauppa tai liidejä keräävä ei pelkästään paikallinen toimija. Tukeeko sivuston sivut toisiaan. Onko palveluun, tuotteisiin sekä paikallisuuteen viittaavat avainsanat tuotu kokonaisuuden kannalta niin, että ne tukevat sitä, mutta ei aiheuta avainsana kaniibalismia tai "Keyword stuffinga". Tukeeko sisältö avainsanoja ja myös asiayhteyttä. Onko sivustolla selkeä ja looginen hierarkia. Onko sivut linkitetty toisiinsa niin, että käyttäjän on helppo edetä sivulla syvällismepään tietoon tai kohti osto, ajanvaraus, yhteydenottoa tai muuta liiketoiminann kannalta tavoiteltavaa toimintoa. Tee tästä analyyisn loppuun yhteenveto ja tuo esiin, mitkä sivut ja niiden elementit ovat kokonaisuuden kannalta hyvin toteutettu ja mitkä eivät. Älä anna suosituksia.
+
+Alla on lueteltu elementit ja tarkennut, että mitä niissä tulee arvioida
+
 1. Metaotsikot ja -kuvaukset
 Ovatko ne informatiivisia suhteessa kunkin sivun sisältöön?
 Vastaavatko ne sivun aiheeseen, ja tukevatko sivuston kokonaisuutta?
 Onko niissä avainsanoja luonnollisesti ja tasapainoisesti?
 Ohjaavatko ne lukijaa toimintaan ja herättävätkö kiinnostuksen?
+
 2. Navigaatio
 Onko navigaatiorakenne selkeä ja looginen koko sivuston tasolla?
 Löytyykö navigaatio kaikilta sivuilta yhtenäisesti?
 Tukeeko navigaatio sisällön rakenteellista ymmärtämistä ja käyttäjän kulkua?
+
 3. Pääsisältö (ordered_content)
 Vastaako sisältö kunkin sivun otsikkoa ja tukee sivuston kokonaisuutta?
 Onko jäsentely hyvä: otsikot, väliotsikot, leipäteksti ja bulletit?
@@ -44,19 +50,23 @@ Millainen on kirjoitustyyli? Onko se yhtenäinen ja sopiva kohderyhmälle?
 Mikä on sisällön SEO-potentiaali:
 Avainsanojen näkökulmasta (perinteinen hakukone)
 Kontekstuaalisesta näkökulmasta (tekoälyn tarjoamat vastaukset)?
+
 4. Taggaamaton sisältö
 Älä arvioi itse sisältöä.
 Jos taggaamatonta sisältöä esiintyy paljon, huomauta tästä: analyysi ei huomioi niitä, ja se voi vaikuttaa tuloksiin.
 Suosittele korjaamaan sisältö rakenteelliseksi (esim. p, h2, h3, li) tulevia arviointeja varten.
+
 5. Linkitys
 Ovatko ankkuritekstit kuvaavia ja lukukokemusta tukevia?
 Miten sisäinen linkitys toimii rakenteena? Ohjaako se käyttäjää loogisesti?
 Tukeeko linkitys päätavoitteita (esim. osto, tiedonhaku)?
 Jos ulkoisia linkkejä on, vievätkö ne luotettaviin ja tarkoituksenmukaisiin kohteisiin?
+
 6. Kuvat
 Onko kuvia riittävästi ja eri sivuilla?
 Toistuvatko samat kuvat vai tukevatko ne yksilöllisesti sivun sisältöä?
 Onko alt-tekstit käytössä? Ovatko ne informatiivisia ja SEO:ta tukevia?
+
 7. Sivun yläosa (Hero / Intro content)
 Löytyykö selkeä H1-otsikko, ja kuvaako se sivun sisältöä kattavasti?
 Onko mukana alaotsikko tai tekstikappale, joka selittää tarkemmin sivun aiheen?
