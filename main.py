@@ -25,87 +25,134 @@ from openai import OpenAI
 client = OpenAI()
 
 ANALYSIS_PROMPT = """
-Toimi SEO- ja tekoälyasiantuntijana ja tee analyysi crawlauksen antaman datan pohjalta. Arvioi jokaisen crawlatun sivun elementit sivukohtaisesti seuraavasti: 
-1. Tekninen toteutus perus seo:n ja tekoälyn näkökulmasta (tarkemmat ohjeet myöhemmin kunkin elementin kohdalla).
-- Meta tietojen toteutus
-- Avainsanojen määrä ja toistuvuus
-- Tekstin pituus 
-- Otsikoiden käyttö
-- kuvien alt tekstit
-- Strukturoidun datan (scheman) käyttö
-- Sisäiset ja ulkoiset linkit
-2. Arvioi myös, että tukevatko elementit kokonaisuutena sivua ja sen sisältöä seo:n ja tekoälyn näkökulmasta. 
+Toimi SEO- ja tekoälyasiantuntijana ja tee analyysi crawlauksen antaman datan pohjalta.
 
-Vastauksen muoto: 
-- Rivi 1: sivun nimi
-- Rivi 2: elementin otsikko (esim metaotsikot ja kuvaukset)
-- Rivi 3: kommentti/arvio.
+Tavoitteena on tunnistaa kaikki puutteet, ristiriitaisuudet ja virheet. Älä keskity hyvin toteutettuihin asioihin, ellei niissä ole jotain erityisen huomionarvoista. Ole kriittinen ja yksiselitteinen havainnoissasi. Arvioi jokaisen crawlatun sivun elementit sivukohtaisesti seuraavasti:
 
-Vastauksen sisältö: 
-- Jos analyysin perusteella elementti on hyvin toteutettu, niin anna vastauksesi vain teksti: HYVÄ
-- Jos elementin toteutuksessa on puutteita, huomautettavaa, ristiriitaisuuksia tai virheitä, niin anna vastaukseksi kuvaus kyseisestä asiasta.
-- Älä anna suosituksia
+1. Tekninen ja sisällöllinen arviointi SEO:n ja tekoälyn näkökulmasta:
+Meta-tiedot
 
-HUOM! Älä tee navigaatiosta arviota jokaisella sivulla. Lisää navigaatio elementin arvio loppuun omalle riville ennen verkkosivutson kokonaisarviota.
+Avainsanojen määrä ja toistuvuus
 
-Arvioi myös verkkosivustoa kokonaisuutena:
-1. Ota huomioon, että onko kysessä paikallinen yritys, palvelualue yritys, verkkokauppa tai liidejä keräävä ei pelkästään paikallinen toimija. 
-2. Tukeeko sivuston sivut toisiaan. 
-3. Esiintyvätkö palveluihin ja tuotteisiin sekä mahdolliseen paikallisuuteen viittaavat avainsanat kokonaisuuden kannalta niin, että ne tukevat sitä, mutta ei aiheuta avainsana kannibalismia tai "Keyword stuffingia". 
-4. Tukeeko sisältö avainsanojen lisäksi myös asiayhteyttä/kontekstia. 
-5. Onko sivustolla selkeä ja looginen hierarkia. 
-6. Onko sivut linkitetty toisiinsa niin, että käyttäjän on helppo edetä sivulla syvällisempään tietoon tai kohti osto, ajanvaraus, yhteydenottoa tai muuta liiketoiminann kannalta tavoiteltavaa toimintoa. 
+Tekstin pituus
 
-Vastauksen muoto: 
-- Vapaa muotoinen analyysin loppuun
+Otsikoiden käyttö
 
-Vastauksen sisältö: 
-- Yhteenveto, jossa tuotu esiin, mitkä sivut ja niiden elementit ovat kokonaisuuden kannalta hyvin toteutettu ja mitkä eivät. 
-- Älä anna suosituksia.
+Kuvien alt-tekstit
 
-Alla on lueteltu elementit ja tarkennut, että mitä niissä tulee arvioida
+Strukturoidun datan (schema) käyttö
 
+Sisäiset ja ulkoiset linkit
+
+Tarkastele jokaisen elementin heikkouksia ennen vahvuuksia. Korosta erityisesti ristiriitaisuuksia elementtien välillä.
+
+2. Kokonaisarvio sivukohtaisesti:
+Arvioi tukevatko edellä mainitut elementit sivun sisältöä kokonaisuutena SEO:n ja tekoälyn näkökulmasta. Jos elementissä on pienikin puute tai epäselvyys, tuo se selkeästi esiin.
+
+Vastauksen muoto:
+Rivi 1: sivun nimi
+
+Rivi 2: elementin otsikko (esim. "Metaotsikot ja -kuvaukset")
+
+Rivi 3: kommentti/arvio
+
+Vastauksen sisältö:
+Jos elementti on toteutettu hyvin eikä siinä ole mitään huomautettavaa, kirjoita vain: HYVÄ
+
+Muussa tapauksessa tuo esiin selkeästi kaikki puutteet, virheet, ristiriidat tai muut heikkoudet.
+
+Älä anna suosituksia.
+
+Navigaatio:
+Älä arvioi navigaatiota jokaisella sivulla erikseen. Lisää sen arvio vain kerran, lopuksi ennen koko sivuston yhteenvetoa.
+
+Sivuston kokonaisarvio:
+Analysoi lopuksi koko verkkosivuston toimivuutta seuraavien kohtien perusteella:
+
+Onko kyseessä paikallinen yritys, palvelualueyritys, verkkokauppa vai liidejä keräävä toimija?
+
+Tukeeko sisältörakenne eri sivujen välistä yhteyttä?
+
+Onko avainsanojen käyttö tasapainoista: vältetäänkö avainsanakanibalisointia ja liiallista toistoa?
+
+Onko sisältö kontekstuaalisesti johdonmukaista, vai rajoittuuko se avainsanojen ympärille?
+
+Onko sivustolla selkeä ja looginen rakenne?
+
+Ovatko sivut linkitetty siten, että käyttäjä etenee kohti tavoiteltua toimintoa (osto, ajanvaraus, yhteydenotto)?
+
+Vastauksen muoto:
+Vapaa muotoinen analyysin loppuun
+
+Vastauksen sisältö:
+Yhteenveto, jossa kuvataan mitkä sivut ja niiden elementit ovat kokonaisuuden kannalta hyvin toteutettu, ja missä taas on puutteita tai ongelmia.
+
+Älä anna suosituksia. Korosta heikkouksia ja ristiriitoja.
+
+Elementtikohtaiset tarkennukset:
 1. Metaotsikot ja -kuvaukset
-Ovatko ne informatiivisia suhteessa kunkin sivun sisältöön?
-Vastaavatko ne sivun aiheeseen, ja tukevatko sivuston kokonaisuutta?
-Onko niissä avainsanoja luonnollisesti ja tasapainoisesti?
+
+Vastaavatko ne sivun aihetta?
+
+Tukevatko kokonaisuutta?
+
+Onko avainsanoja käytetty luonnollisesti ja tasapainoisesti?
+
 Ohjaavatko ne lukijaa toimintaan ja herättävätkö kiinnostuksen?
 
 2. Navigaatio
-Onko navigaatiorakenne selkeä ja looginen koko sivuston tasolla?
-Löytyykö navigaatio kaikilta sivuilta yhtenäisesti?
-Tukeeko navigaatio sisällön rakenteellista ymmärtämistä ja käyttäjän kulkua?
+
+Onko rakenne selkeä ja looginen?
+
+Näkyykö navigaatio kaikilla sivuilla yhtenäisesti?
+
+Tukeeko se sisällön ymmärtämistä ja käyttäjän kulkua?
 
 3. Pääsisältö (ordered_content)
-Vastaako sisältö kunkin sivun otsikkoa ja tukee sivuston kokonaisuutta?
-Onko jäsentely hyvä: otsikot, väliotsikot, leipäteksti ja bulletit?
-Onko sisältö riittävän laajaa mutta ei tarpeettomasti toistelevaa?
-Millainen on kirjoitustyyli? Onko se yhtenäinen ja sopiva kohderyhmälle?
-Mikä on sisällön SEO-potentiaali:
-Avainsanojen näkökulmasta (perinteinen hakukone)
-Kontekstuaalisesta näkökulmasta (tekoälyn tarjoamat vastaukset)?
+
+Onko sisältö linjassa sivun otsikon ja koko sivuston kanssa?
+
+Onko jäsentely kunnossa (otsikot, leipäteksti, bulletit)?
+
+Onko sisältö riittävää mutta ei tarpeettoman toistelevaa?
+
+Onko tyyli yhtenäinen ja kohderyhmälle sopiva?
+
+Arvioi SEO-potentiaali sekä avainsanojen että asiayhteyksien osalta.
 
 4. Taggaamaton sisältö
-Älä arvioi itse sisältöä.
-Jos taggaamatonta sisältöä esiintyy paljon, huomauta tästä: analyysi ei huomioi niitä, ja se voi vaikuttaa tuloksiin.
-Suosittele korjaamaan sisältö rakenteelliseksi (esim. p, h2, h3, li) tulevia arviointeja varten.
+
+Älä arvioi sisältöä.
+
+Jos taggaamatonta sisältöä on runsaasti, huomauta siitä.
 
 5. Linkitys
-Ovatko ankkuritekstit kuvaavia ja lukukokemusta tukevia?
-Miten sisäinen linkitys toimii rakenteena? Ohjaako se käyttäjää loogisesti?
-Tukeeko linkitys päätavoitteita (esim. osto, tiedonhaku)?
-Jos ulkoisia linkkejä on, vievätkö ne luotettaviin ja tarkoituksenmukaisiin kohteisiin?
+
+Ovatko ankkuritekstit kuvaavia ja selkeitä?
+
+Tukeeko sisäinen linkitys loogista etenemistä ja tavoitetta?
+
+Ovatko ulkoiset linkit luotettavia ja aiheeseen liittyviä?
 
 6. Kuvat
-Onko kuvia riittävästi ja eri sivuilla?
-Toistuvatko samat kuvat vai tukevatko ne yksilöllisesti sivun sisältöä?
-Onko alt-tekstit käytössä? Ovatko ne informatiivisia ja SEO:ta tukevia?
 
-7. Sivun yläosa (Hero / Intro content)
-Löytyykö selkeä H1-otsikko, ja kuvaako se sivun sisältöä kattavasti?
-Onko mukana alaotsikko tai tekstikappale, joka selittää tarkemmin sivun aiheen?
-Sisältääkö hero-osio call to action -elementtejä (esim. painikkeita, linkkejä)?
-Tukeeko hero-osio käyttäjän päätöksentekoa ja ohjaa toimintaa tehokkaasti?
+Onko kuvia tarpeeksi ja ovatko ne relevantteja?
+
+Tukevatko kuvat yksilöllisesti sisältöä, vai toistuvatko ne?
+
+Onko alt-tekstejä käytetty ja ovatko ne SEO-myönteisiä?
+
+7. Hero/Intro (sivun yläosa)
+
+Onko H1 selkeä ja aiheeseen sopiva?
+
+Onko mukana alaotsikko tai selittävä teksti?
+
+Onko call-to-action -elementtejä?
+
+Ohjaako hero-osio käyttäjän toimintaa tehokkaasti?
+
+
 """
 
 def analyze_site_data(pages):
