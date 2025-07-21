@@ -70,11 +70,8 @@ def analyze_site_data(pages):
     Yhdistetään analysoinnin alle rajallinen määrä dataa tokenien hallitsemiseksi.
     """
      # Lue SEO-asiantuntijatiedosto mukaan analyysipromptiin
-    try:
-        with open("seo_knowledge.txt", "r", encoding="utf-8") as f:
-            seo_knowledge = f.read()
-    except FileNotFoundError:
-        seo_knowledge = ""
+    with open("seo_knowledge.txt", "r", encoding="utf-8") as f:
+        seo_knowledge = f.read()
         
     # rajoita data esimerkiksi meta-otsikoihin, navigaatioon, linkkeihin, kuviin ja järjestettyyn sisällön otsikkotasoon
     simplified = []
