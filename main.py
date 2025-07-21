@@ -10,7 +10,7 @@ app = Flask(__name__)
 TEMPLATE = """
 <!doctype html>
 <title>Sivuston crawlaus</title>
-<h1>Analysoi sivusto (ilman tekoälyä)</h1>
+<h1>Analysoi sivusto</h1>
 <form method="post">
   <input name="url" style="width:400px" placeholder="Syötä URL esim. https://esimerkki.fi">
   <input type="submit" value="Crawlaa">
@@ -25,9 +25,43 @@ from openai import OpenAI
 client = OpenAI()
 
 ANALYSIS_PROMPT = """
-Toimi SEO- ja tekoälyasiantuntijana ja tee analyysi crawlauksen antaman datan pohjalta. Arvioi jokaisen crawlatun sivun elementit sivukohtaisesti seuraavasti: Tekninen toteutus perus seo:n näkökulmasta, jos kaikki on hyvin, niin mainitse vain hyvä, jos huomautettavaa tai huonosti toteutettu, niin kerro ne, mutta älä anna suosituksia. Arvioi myös, että tukevatko elementit kokonaisuutena sivua ja sen sisältöä seo:n näkökulmasta. Jos hyvin, niin mainitse vain hyvä, mutta jos huomautettavaa, ristiriitaisuuksia tai virheitä, niin listaa ne, mutta älä annan suosituksia. Toteuta vastaus niin, että ensimmäisenä on sivun nimi, sen alla elementin otsikko (esim metaotsikot ja kuvaukset) ja sen alla kommentti/arvio.
+Toimi SEO- ja tekoälyasiantuntijana ja tee analyysi crawlauksen antaman datan pohjalta. Arvioi jokaisen crawlatun sivun elementit sivukohtaisesti seuraavasti: 
+1. Tekninen toteutus perus seo:n ja tekoälyn näkökulmasta (tarkemmat ohjeet myöhemmin kunkin elementin kohdalla).
+- Meta tietojen toteutus
+- Avainsanojen määrä ja toistuvuus
+- Tekstin pituus 
+- Otsikoiden käyttö
+- kuvien alt tekstit
+- Strukturoidun datan (scheman) käyttö
+- Sisäiset ja ulkoiset linkit
+2. Arvioi myös, että tukevatko elementit kokonaisuutena sivua ja sen sisältöä seo:n ja tekoälyn näkökulmasta. 
 
-Arvioi myös verkkosivustoa kokonaisuutena. Ota huomioon, että onko kysessä paikallinen yritys, palvelualue yritys, verkkokauppa tai liidejä keräävä ei pelkästään paikallinen toimija. Tukeeko sivuston sivut toisiaan. Onko palveluun, tuotteisiin sekä paikallisuuteen viittaavat avainsanat tuotu kokonaisuuden kannalta niin, että ne tukevat sitä, mutta ei aiheuta avainsana kaniibalismia tai "Keyword stuffinga". Tukeeko sisältö avainsanoja ja myös asiayhteyttä. Onko sivustolla selkeä ja looginen hierarkia. Onko sivut linkitetty toisiinsa niin, että käyttäjän on helppo edetä sivulla syvällismepään tietoon tai kohti osto, ajanvaraus, yhteydenottoa tai muuta liiketoiminann kannalta tavoiteltavaa toimintoa. Tee tästä analyyisn loppuun yhteenveto ja tuo esiin, mitkä sivut ja niiden elementit ovat kokonaisuuden kannalta hyvin toteutettu ja mitkä eivät. Älä anna suosituksia.
+Vastauksen muoto: 
+- Rivi 1: sivun nimi
+- Rivi 2: elementin otsikko (esim metaotsikot ja kuvaukset)
+- Rivi 3: kommentti/arvio.
+
+Vastauksen sisältö: 
+- Jos analyysin perusteella elementti on hyvin toteutettu, niin anna vastauksesi vain teksti: HYVÄ
+- Jos elementin toteutuksessa on puutteita, huomautettavaa, ristiriitaisuuksia tai virheitä, niin anna vastaukseksi kuvaus kyseisestä asiasta.
+- Älä anna suosituksia
+
+HUOM! Älä tee navigaatiosta arviota jokaisella sivulla. Lisää navigaatio elementin arvio loppuun omalle riville ennen verkkosivutson kokonaisarviota.
+
+Arvioi myös verkkosivustoa kokonaisuutena:
+1. Ota huomioon, että onko kysessä paikallinen yritys, palvelualue yritys, verkkokauppa tai liidejä keräävä ei pelkästään paikallinen toimija. 
+2. Tukeeko sivuston sivut toisiaan. 
+3. Esiintyvätkö palveluihin ja tuotteisiin sekä mahdolliseen paikallisuuteen viittaavat avainsanat kokonaisuuden kannalta niin, että ne tukevat sitä, mutta ei aiheuta avainsana kannibalismia tai "Keyword stuffingia". 
+4. Tukeeko sisältö avainsanojen lisäksi myös asiayhteyttä/kontekstia. 
+5. Onko sivustolla selkeä ja looginen hierarkia. 
+6. Onko sivut linkitetty toisiinsa niin, että käyttäjän on helppo edetä sivulla syvällisempään tietoon tai kohti osto, ajanvaraus, yhteydenottoa tai muuta liiketoiminann kannalta tavoiteltavaa toimintoa. 
+
+Vastauksen muoto: 
+- Vapaa muotoinen analyysin loppuun
+
+Vastauksen sisältö: 
+- Yhteenveto, jossa tuotu esiin, mitkä sivut ja niiden elementit ovat kokonaisuuden kannalta hyvin toteutettu ja mitkä eivät. 
+- Älä anna suosituksia.
 
 Alla on lueteltu elementit ja tarkennut, että mitä niissä tulee arvioida
 
