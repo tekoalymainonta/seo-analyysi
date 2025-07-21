@@ -73,8 +73,8 @@ def analyze_site_data(pages):
     with open("seo_knowledge.txt", "r", encoding="utf-8") as f:
         seo_knowledge = f.read()
         
-print("== SEO Knowledge Preview ==")
-print(seo_knowledge[:500])
+    print("== SEO Knowledge Preview ==")
+    print(seo_knowledge[:500])
         
     # rajoita data esimerkiksi meta-otsikoihin, navigaatioon, linkkeihin, kuviin ja järjestettyyn sisällön otsikkotasoon
     simplified = []
