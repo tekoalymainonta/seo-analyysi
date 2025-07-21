@@ -1,3 +1,6 @@
+print("== SEO Knowledge Preview ==")
+print(seo_knowledge[:500])
+
 from flask import Flask, request, render_template_string
 import requests
 from bs4 import BeautifulSoup, Tag
