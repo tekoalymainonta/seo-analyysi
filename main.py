@@ -1,6 +1,3 @@
-print("== SEO Knowledge Preview ==")
-print(seo_knowledge[:500])
-
 from flask import Flask, request, render_template_string
 import requests
 from bs4 import BeautifulSoup, Tag
@@ -75,6 +72,9 @@ def analyze_site_data(pages):
      # Lue SEO-asiantuntijatiedosto mukaan analyysipromptiin
     with open("seo_knowledge.txt", "r", encoding="utf-8") as f:
         seo_knowledge = f.read()
+        
+print("== SEO Knowledge Preview ==")
+print(seo_knowledge[:500])
         
     # rajoita data esimerkiksi meta-otsikoihin, navigaatioon, linkkeihin, kuviin ja järjestettyyn sisällön otsikkotasoon
     simplified = []
