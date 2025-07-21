@@ -65,19 +65,20 @@ Tukeeko hero-osio käyttäjän päätöksentekoa ja ohjaa toimintaa tehokkaasti?
 """
 
 def analyze_site_data(pages):
-    """
-    pages: lista JSON-dictoja crawlatuista sivuista.
-    Yhdistetään analysoinnin alle rajallinen määrä dataa tokenien hallitsemiseksi.
-    """
-    # Lue SEO-asiantuntijatiedosto mukaan analyysipromptiin
     try:
         with open("seo_knowledge.txt", "r", encoding="utf-8") as f:
             seo_knowledge = f.read()
+        print("== SEO Knowledge loaded successfully ==")
     except Exception as e:
         print(f"Error reading seo_knowledge.txt: {e}")
         seo_knowledge = ""
-        
-    # rajoita data esimerkiksi meta-otsikoihin, navigaatioon, linkkeihin, kuviin ja järjestettyyn sisällön otsikkotasoon
+
+    print("== SEO Knowledge Preview ==")
+    print(seo_knowledge[:500])
+
+    if not seo_knowledge.strip():
+        print("Warning: seo_knowledge.txt is empty or missing content!")
+
     simplified = []
     for p in pages:
         simplified.append({
@@ -86,15 +87,15 @@ def analyze_site_data(pages):
             "meta_description": p.get("meta_description",""),
             "navigation_links": p.get("navigation_links", []),
             "ordered_content": [ {"tag": el["tag"], "text": el["text"]} 
-                                 for el in p.get("ordered_content", [])[:10] ],  # rajoita per sivu
+                                 for el in p.get("ordered_content", [])[:10] ],
             "content_links": p.get("content_links", [])[:10],
             "images": p.get("images", [])[:5]
         })
-    # rajaa yhteensä ~2000 tokeniin – JSON stringinä noin 10 000 merkkiä
+
     user_msg = json.dumps(simplified, ensure_ascii=False)
     if len(user_msg) > 20000:
-        user_msg = user_msg[:20000]  # leikkaa tarvittaessa
-        
+        user_msg = user_msg[:20000]
+
     system_msg = f"""
 {seo_knowledge}
 
@@ -103,7 +104,7 @@ def analyze_site_data(pages):
 
     from openai import OpenAI
 
-    client = OpenAI()  # käyttää automaattisesti ympäristömuuttujan OPENAI_API_KEY
+    client = OpenAI()
 
     resp = client.chat.completions.create(
         model="gpt-4o",
