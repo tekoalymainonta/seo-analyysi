@@ -69,6 +69,13 @@ def analyze_site_data(pages):
     pages: lista JSON-dictoja crawlatuista sivuista.
     Yhdistetään analysoinnin alle rajallinen määrä dataa tokenien hallitsemiseksi.
     """
+     # Lue SEO-asiantuntijatiedosto mukaan analyysipromptiin
+    try:
+        with open("seo_knowledge.txt", "r", encoding="utf-8") as f:
+            seo_knowledge = f.read()
+    except FileNotFoundError:
+        seo_knowledge = ""
+        
     # rajoita data esimerkiksi meta-otsikoihin, navigaatioon, linkkeihin, kuviin ja järjestettyyn sisällön otsikkotasoon
     simplified = []
     for p in pages:
@@ -83,10 +90,15 @@ def analyze_site_data(pages):
             "images": p.get("images", [])[:5]
         })
     # rajaa yhteensä ~2000 tokeniin – JSON stringinä noin 10 000 merkkiä
-    system_msg = ANALYSIS_PROMPT.strip()
     user_msg = json.dumps(simplified, ensure_ascii=False)
     if len(user_msg) > 20000:
         user_msg = user_msg[:20000]  # leikkaa tarvittaessa
+        
+    system_msg = f"""
+{seo_knowledge}
+
+{ANALYSIS_PROMPT.strip()}
+""".strip()
 
     from openai import OpenAI
 
