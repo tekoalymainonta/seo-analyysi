@@ -69,7 +69,7 @@ def analyze_site_data(pages):
     pages: lista JSON-dictoja crawlatuista sivuista.
     Yhdistetään analysoinnin alle rajallinen määrä dataa tokenien hallitsemiseksi.
     """
-     # Lue SEO-asiantuntijatiedosto mukaan analyysipromptiin
+    # Lue SEO-asiantuntijatiedosto mukaan analyysipromptiin
     with open("seo_knowledge.txt", "r", encoding="utf-8") as f:
         seo_knowledge = f.read()
         
