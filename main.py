@@ -47,23 +47,39 @@ def get_navigation(soup):
                 nav_links.append(f"{text} ({href})")
     return nav_links
 
-def extract_ordered_content(soup):
+def extract_ordered_content_simple(soup):
     body = soup.body
     if not body:
         return []
 
-    elements, start = [], False
-    for element in body.descendants:
-        if isinstance(element, Tag):
-            if is_footer_tag(element):
-                break
-            if element.name == "h1":
-                start = True
-            if start and element.name in ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li"]:
-                text = element.get_text(strip=True)
-                if text:
-                    elements.append({"tag": element.name, "text": text})
+    elements = []
+    for element in body.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "p", "li"]):
+        if any(is_footer_tag(p) or p.name in ["nav", "header"] for p in element.parents):
+            continue
+        text = element.get_text(strip=True)
+        if text:
+            elements.append({"tag": element.name, "text": text})
     return elements
+    
+def extract_ordered_content_fallback(soup):
+    body = soup.body
+    if not body:
+        return []
+
+    elements = []
+    for element in body.find_all(["div", "section"]):
+        if any(is_footer_tag(p) or p.name in ["nav", "header"] for p in element.parents):
+            continue
+        text = element.get_text(separator=" ", strip=True)
+        if len(text.split()) >= 10:  # vain jos divissä on vähintään 10 sanaa
+            elements.append({"tag": "div", "text": text})
+    return elements
+
+def extract_ordered_content(soup):
+    content = extract_ordered_content_simple(soup)
+    if len(content) < 3:  # jos sisältöä ei löydy kunnolla
+        content = extract_ordered_content_fallback(soup)
+    return content
 
 def extract_internal_and_external_links(soup):
     links = []
