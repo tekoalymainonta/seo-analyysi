@@ -47,39 +47,32 @@ def get_navigation(soup):
                 nav_links.append(f"{text} ({href})")
     return nav_links
 
-def extract_ordered_content_simple(soup):
-    body = soup.body
-    if not body:
-        return []
-
-    elements = []
-    for element in body.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "p", "li"]):
-        if any(is_footer_tag(p) or p.name in ["nav", "header"] for p in element.parents):
-            continue
-        text = element.get_text(strip=True)
-        if text:
-            elements.append({"tag": element.name, "text": text})
-    return elements
-    
-def extract_ordered_content_fallback(soup):
-    body = soup.body
-    if not body:
-        return []
-
-    elements = []
-    for element in body.find_all(["div", "section"]):
-        if any(is_footer_tag(p) or p.name in ["nav", "header"] for p in element.parents):
-            continue
-        text = element.get_text(separator=" ", strip=True)
-        if len(text.split()) >= 10:  # vain jos divissä on vähintään 10 sanaa
-            elements.append({"tag": "div", "text": text})
-    return elements
-
 def extract_ordered_content(soup):
-    content = extract_ordered_content_simple(soup)
-    if len(content) < 3:  # jos sisältöä ei löydy kunnolla
-        content = extract_ordered_content_fallback(soup)
-    return content
+    body = soup.body
+    if not body:
+        return []
+
+    elements = []
+    seen_texts = set()
+
+    def extract_texts(tag):
+        if not isinstance(tag, Tag):
+            return
+        if tag.name in ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li", "strong", "em", "span"]:
+            text = tag.get_text(strip=True)
+            if text and text not in seen_texts:
+                elements.append({"tag": tag.name, "text": text})
+                seen_texts.add(text)
+        for child in tag.children:
+            extract_texts(child)
+
+    # Käy läpi kaikki osat bodyssä, mutta vältä nav/footer
+    for section in body.find_all(recursive=False):
+        if is_footer_tag(section) or section.name == "nav":
+            continue
+        extract_texts(section)
+
+    return elements[:20]  # rajoitetaan silti 20 osaan, jos tarpeen
 
 def extract_internal_and_external_links(soup):
     links = []
