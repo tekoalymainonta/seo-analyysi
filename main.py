@@ -52,18 +52,17 @@ def extract_ordered_content(soup):
     if not body:
         return []
 
-    elements, start = [], False
-    for element in body.descendants:
-        if isinstance(element, Tag):
-            if is_footer_tag(element):
-                break
-            if element.name == "h1":
-                start = True
-            if start and element.name in ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li"]:
-                text = element.get_text(strip=True)
-                if text:
-                    elements.append({"tag": element.name, "text": text})
+    elements = []
+    for element in body.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "p", "li"]):
+        # Ohitetaan footerin sisällä olevat
+        if any(is_footer_tag(parent) for parent in element.parents):
+            continue
+        text = element.get_text(strip=True)
+        if text:
+            elements.append({"tag": element.name, "text": text})
+
     return elements
+
 
 def extract_internal_and_external_links(soup):
     links = []
