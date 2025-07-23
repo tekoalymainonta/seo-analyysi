@@ -52,27 +52,18 @@ def extract_ordered_content(soup):
     if not body:
         return []
 
-    elements = []
-    seen_texts = set()
-
-    def extract_texts(tag):
-        if not isinstance(tag, Tag):
-            return
-        if tag.name in ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li", "strong", "em", "span"]:
-            text = tag.get_text(strip=True)
-            if text and text not in seen_texts:
-                elements.append({"tag": tag.name, "text": text})
-                seen_texts.add(text)
-        for child in tag.children:
-            extract_texts(child)
-
-    # Käy läpi kaikki osat bodyssä, mutta vältä nav/footer
-    for section in body.find_all(recursive=False):
-        if is_footer_tag(section) or section.name == "nav":
-            continue
-        extract_texts(section)
-
-    return elements[:20]  # rajoitetaan silti 20 osaan, jos tarpeen
+    elements, start = [], False
+    for element in body.descendants:
+        if isinstance(element, Tag):
+            if is_footer_tag(element):
+                break
+            if element.name == "h1":
+                start = True
+            if start and element.name in ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li"]:
+                text = element.get_text(strip=True)
+                if text:
+                    elements.append({"tag": element.name, "text": text})
+    return elements
 
 def extract_internal_and_external_links(soup):
     links = []
