@@ -117,4 +117,48 @@ def get_page_data(url, html=None):
 
 def crawl_site(root_url, max_pages=30, max_depth=2):
     visited = set()
-    queue = [(normalize_u_]()
+    queue = [(normalize_url(root_url), 0)]
+    results = []
+
+    while queue and len(results) < max_pages:
+        url, depth = queue.pop(0)
+        if url in visited or depth > max_depth:
+            continue
+        visited.add(url)
+
+        try:
+            r = requests.get(url, timeout=10)
+            html = r.text
+            page_data = get_page_data(url, html)
+            results.append(page_data)
+
+            if depth < max_depth:
+                soup = BeautifulSoup(html, "html.parser")
+                for a in soup.find_all("a", href=True):
+                    href = a["href"].strip()
+                    if href.startswith("#") or "?" in href:
+                        continue
+                    full = href if href.startswith("http") else url.rstrip("/") + "/" + href.lstrip("/")
+                    norm = normalize_url(full)
+                    if norm not in visited:
+                        queue.append((norm, depth + 1))
+        except:
+            continue
+
+    return results
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    result = ""
+    if request.method == "POST":
+        url = request.form.get("url")
+        if url:
+            pages = crawl_site(url)
+            result = f"=== Crawlaustulos ({len(pages)} sivua) ===\n\n"
+            result += json.dumps(pages, indent=2, ensure_ascii=False)
+        else:
+            result = "URL puuttuu!"
+    return render_template_string(TEMPLATE, result=result)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=81)
