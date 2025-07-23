@@ -85,6 +85,18 @@ def extract_images(soup):
         if src:
             images.append({"src": src, "alt": alt})
     return images
+    
+def extract_json_ld(soup):
+    json_ld_data = []
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            content = script.string
+            if content:
+                parsed = json.loads(content.strip())
+                json_ld_data.append(parsed)
+        except json.JSONDecodeError:
+            continue
+    return json_ld_data
 
 def get_page_data(url, html=None):
     try:
@@ -102,6 +114,7 @@ def get_page_data(url, html=None):
         ordered_content = extract_ordered_content(soup)
         content_links = extract_internal_and_external_links(soup)
         images = extract_images(soup)
+        json_ld = extract_json_ld(soup)
 
         return {
             "url": url,
@@ -110,8 +123,10 @@ def get_page_data(url, html=None):
             "navigation_links": navigation,
             "ordered_content": ordered_content[:10],
             "content_links": content_links[:10],
-            "images": images[:5]
+            "images": images[:5],
+            "json_ld": json_ld
         }
+
     except Exception as e:
         return {"url": url, "error": str(e)}
 
