@@ -47,18 +47,22 @@ def get_navigation(soup):
                 nav_links.append(f"{text} ({href})")
     return nav_links
 
-def extract_ordered_content_simple(soup):
+def extract_ordered_content(soup):
     body = soup.body
     if not body:
         return []
 
-    elements = []
-    for element in body.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "p", "li"]):
-        if any(is_footer_tag(p) or p.name in ["nav", "header"] for p in element.parents):
-            continue
-        text = element.get_text(strip=True)
-        if text:
-            elements.append({"tag": element.name, "text": text})
+    elements, start = [], False
+    for element in body.descendants:
+        if isinstance(element, Tag):
+            if is_footer_tag(element):
+                break
+            if element.name == "h1":
+                start = True
+            if start and element.name in ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li"]:
+                text = element.get_text(strip=True)
+                if text:
+                    elements.append({"tag": element.name, "text": text})
     return elements
 
 def extract_internal_and_external_links(soup):
@@ -81,18 +85,6 @@ def extract_images(soup):
         if src:
             images.append({"src": src, "alt": alt})
     return images
-    
-def extract_json_ld(soup):
-    json_ld_data = []
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            content = script.string
-            if content:
-                parsed = json.loads(content.strip())
-                json_ld_data.append(parsed)
-        except json.JSONDecodeError:
-            continue
-    return json_ld_data
 
 def get_page_data(url, html=None):
     try:
@@ -110,7 +102,6 @@ def get_page_data(url, html=None):
         ordered_content = extract_ordered_content(soup)
         content_links = extract_internal_and_external_links(soup)
         images = extract_images(soup)
-        json_ld = extract_json_ld(soup)
 
         return {
             "url": url,
@@ -119,10 +110,8 @@ def get_page_data(url, html=None):
             "navigation_links": navigation,
             "ordered_content": ordered_content[:10],
             "content_links": content_links[:10],
-            "images": images[:5],
-            "json_ld": json_ld
+            "images": images[:5]
         }
-
     except Exception as e:
         return {"url": url, "error": str(e)}
 
