@@ -54,15 +54,13 @@ def extract_ordered_content(soup):
 
     elements = []
     for element in body.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "p", "li"]):
-        # Ohitetaan footerin sisällä olevat
-        if any(is_footer_tag(parent) for parent in element.parents):
+        # Ohita footerin, navin ja headerin sisällä olevat elementit
+        if any(is_footer_tag(p) or p.name in ["nav", "header"] for p in element.parents):
             continue
         text = element.get_text(strip=True)
         if text:
             elements.append({"tag": element.name, "text": text})
-
     return elements
-
 
 def extract_internal_and_external_links(soup):
     links = []
