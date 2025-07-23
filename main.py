@@ -47,14 +47,13 @@ def get_navigation(soup):
                 nav_links.append(f"{text} ({href})")
     return nav_links
 
-def extract_ordered_content(soup):
+def extract_ordered_content_simple(soup):
     body = soup.body
     if not body:
         return []
 
     elements = []
     for element in body.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "p", "li"]):
-        # Ohita footerin, navin ja headerin sisällä olevat elementit
         if any(is_footer_tag(p) or p.name in ["nav", "header"] for p in element.parents):
             continue
         text = element.get_text(strip=True)
